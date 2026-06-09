@@ -22,30 +22,29 @@ Output:
 #include <vector>
 
 int main (){
-    int n;
-    int *p = &n;
+    long long n;
     std::cout << "Enter a positive integer:";
     std::cin >> n;
-    std::vector <int> output;
-    output.push_back(*p);
+    std::vector <long long> output;
+    output.push_back(n);
     
-    if (*p<1){
-        std::cout << "invalid number lad";
+    if (n<1){
+        std::cout << "invalid number lad\n";
+        return 1;
     }
 
-    while (*p!=1){
-        if (*p % 2 == 0){
-            *p = *p/2;
-            output.push_back(*p);
+    while (n!=1){
+        if (n % 2 == 0){
+            n = n/2;
+            output.push_back(n);
         }
         else {
-            *p = (*p*3) +1 ;
-            output.push_back(*p);
+            n = (n*3) +1 ;
+            output.push_back(n);
         }
     }
-    for (int last_value : output){
+    for (long long last_value : output){
         std::cout << last_value << " ";
 
     }
-    delete p; //prevent memory leaks
 }   

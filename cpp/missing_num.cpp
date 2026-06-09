@@ -18,42 +18,28 @@ Output:
 4
 */
 #include <iostream>
-#include <vector>
-int main () {
-    int f_n, s_n;
-    std::cout << "Enter a positive integer: ";
-    std::cin >> f_n;
-    std::vector <int> v_n;
-    int i = f_n - 1;
-    while (i!= 0) {
-        std::cout << "Enter numbers containing between 1 to the first integer: ";
-        std::cin >> s_n;
-        if (1 <= s_n < f_n){
-            v_n.push_back(s_n);
+using namespace std;
+
+int main() {
+    int n;
+    cout << "Enter n: ";
+    cin >> n; // total number of integers;
+
+    long long expected = (long long)n * (n + 1) / 2;  
+    // long lon data type used incase the input is huge otherwise we can use int;
+    long long actual = 0;
+
+    for (int i = 0; i < n - 1; i++) {
+        int x;
+        cin >> x; // series of integers;
+        // inclusive between 1 to n;
+        if (x < 1 || x > n) {
+            cout << "Invalid number: " << x << endl;
+            return 1;
         }
-        else {
-            std::cout << "make sure the second line of integers are inclusive between 1 and first integers!";
-        }
-        i--;
+        actual += x;
     }
-    
-    for (int k = 1; k <= f_n; k++) {
-        bool found = false;
-        
-        // Search for k in the vector
-        for (int l = 0; l < v_n.size(); l++) {
-            if (k == v_n[l]) {
-                found = true;
-                break;  // Found it, no need to continue searching
-            }
-        }
-        
-        // If not found, this is our missing number
-        if ( found == false) {
-            std::cout << "Output: " << k << std::endl;
-            break;  // Found the missing number
-        }
-    }
-    
+
+    cout << "Missing number: " << expected - actual << endl;
     return 0;
 }
