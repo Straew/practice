@@ -17,4 +17,96 @@ hello_world:
     .asciz "Hello World\n"
 
 
-sl.u.AGvnrXE_UAzKrq190aCB_ArXyjurrkOAHxhJoROMiiiE6RU0CcSALGByAm2QP-G4_tWYVJUXQomNiLbX--EIrOtc-gvyDM3CLDsmXsiQIew4pipkMH5nFhUJewfZ_vCSTy69AIu_1DPqVHUJuWVdLzleYBPp6eo4jXY7ZExlW4OMymCMKgftBShbYMdJ7mvG3Ul1hvpxulSq8GZQB69AB_sXQFZg5dvldoHpjcgGoKVSYnzHIwMHp53m8sFP-AWzFKODEHVJSZIZg6UgUdhsMM3lCuRzbd4_CvhWg46uUVzZevG3AEjNSbf6z3_ylsSN980UjdsmM0Av50ScuMp3P8KZCCanoFYrSmWd7sY3KpIIN8bFrBo1LNJ_Dxks0X38D6ukTDYCPkT-TuRhHuiFqtLlpAmwk2ZPQEK7RL1gRMefnfALPgLJSsavyeLaxO9MRDPr_REbayhOiK1MhFx0-EVyPvLRPcZnlsBEnPS-oGEU3hNaHrJG2R1l_dGA_ISItdNoPzGK3b7bS1nYdU0DpRTF5mF0XcwHpvTxPLH9vZ43BCkXjrVgOa1DBDqJITAgdepVE6cbN1FZu06YU5aI3jvIboPd1YtDj7ax0dkJ-9DciS8tbCcQ4M4t-1RutvuETlVKBAip_Lvso8FxN4csfaFGp-mAXxqeaSJVCLt0ACfy6lJfw5tEbiBUW1Mqrx5xZwgeRc8r43q5RYF-Y26yC0-b18YSsOgZec5ApoKDrxuZ2oaJWtRY842e610uz1SiWoaXR_gGq4RbobtY2srsl22zuzG03ajUSW2oogENxVFv8QhChUW1cltyHUwG2MWFlDziwQMiEic3QO-c9ysARb4XcC-D2L5RWQbkOJb4c_XP8fTHnRRD2E7eqLSEzAgdAzYD_sseik9egTo8jef2jhfBYNBcD1x2c4_fezo1GPRLyZKO7hU1a-fAMWm3V2jscZzaI9SZuzwxw1snV2mP9-wMWWYham7mNeEEEX5-OQsi0UUqZudtDM-YAWSFIBiPhCgElkTf1hsauYskEwIK41KEgas3y7IHrMTWCwryYIORUB04q2KuPM6sbN1c7XLBX8MenpRW9PZk8gbOmkmpjHJs-Amk1l9SHFFCBPW19macNU7LEFTF2vSaXTYhabfhwhAmy2hMaQ-LJeAHgz7Isqkxjq71OmfgmP9glLiFgj6s38YpAEJE9Aj7OqxbuOaWwzAkQf7Yz1TLXX6GdGV_1x-o-LMIlLJcoQvkEkZhZarjSzqOr2MSlZC2FY4Mxe03WHX4uI3iDtaQn8ynlebHqOrUAu7ttra1jAMXJbh5KBXbRKJmn320QiHtTnNrTYn_iePUPGUkh4MobMBY9suvcGoBMF0dufGqZ9_f6rGNB6Aq2OXaXCUtfraT6NvsADMyRA4AMNptFO7mbWpas3cOkorMl2M67YBiFuPMGKj7C9Ny7Q
+from flask import Flask, render_template
+from gpiozero import LED
+
+app = Flask(__name__)
+
+# Initialize dictionary of LEDs mapped to their respective GPIO pins
+leds = {
+    17: LED(17),
+    26: LED(26),
+    16: LED(16)
+}
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/led/<int:pin>/<state>')
+def led_control(pin, state):
+    # Check if requested pin exists in our configuration
+    if pin in leds:
+        if state == 'on':
+            leds[pin].on()
+            message = f"GPIO {pin} turned ON"
+        elif state == 'off':
+            leds[pin].off()
+            message = f"GPIO {pin} turned OFF"
+        else:
+            message = "Invalid state requested"
+    else:
+        message = f"GPIO {pin} is not configured"
+        
+    return render_template('index.html', message=message)
+
+if __name__ == '__main__':
+    # Run server accessible on local network
+    app.run(host='0.0.0.0', port=5000)
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LED Control Panel</title>
+</head>
+<body>
+    <h1>Home Lighting Control</h1>
+    
+    <!-- Status Message Display -->
+    {% if message %}
+        <p><strong>Status:</strong> {{ message }}</p>
+    {% else %}
+        <p><strong>Status:</strong> System Ready</p>
+    {% endif %}
+
+    <hr>
+
+    <!-- Bedroom Light (GPIO 17) -->
+    <section>
+        <h2>Yourname's Bedroom Light (GPIO 17)</h2>
+        <form action="/led/17/on" method="get" style="display: inline;">
+            <button type="submit">Turn ON</button>
+        </form>
+        <form action="/led/17/off" method="get" style="display: inline;">
+            <button type="submit">Turn OFF</button>
+        </form>
+    </section>
+
+    <!-- Living Room Light (GPIO 26) -->
+    <section>
+        <h2>Yourname's Living Room Light (GPIO 26)</h2>
+        <form action="/led/26/on" method="get" style="display: inline;">
+            <button type="submit">Turn ON</button>
+        </form>
+        <form action="/led/26/off" method="get" style="display: inline;">
+            <button type="submit">Turn OFF</button>
+        </form>
+    </section>
+
+    <!-- Kitchen Light (GPIO 16) -->
+    <section>
+        <h2>Yourname's Kitchen Light (GPIO 16)</h2>
+        <form action="/led/16/on" method="get" style="display: inline;">
+            <button type="submit">Turn ON</button>
+        </form>
+        <form action="/led/16/off" method="get" style="display: inline;">
+            <button type="submit">Turn OFF</button>
+        </form>
+    </section>
+</body>
+</html>
